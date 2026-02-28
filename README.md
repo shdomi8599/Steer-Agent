@@ -116,4 +116,4 @@ An interactive CLI that simulates an agent loop — type advice while it runs an
 
 ## License
 
-AGPL-3.0
+Apache-2.0

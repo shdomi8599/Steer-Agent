@@ -1,6 +1,6 @@
 {
   "name": "@steer-agent/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Add real-time coaching-style steering to any AI agent loop",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -33,7 +33,7 @@
     "vscode"
   ],
   "author": "",
-  "license": "AGPL-3.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^25.3.2",
     "tsup": "^8.0.0",
