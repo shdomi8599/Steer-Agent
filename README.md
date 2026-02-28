@@ -114,14 +114,6 @@ An interactive CLI that simulates an agent loop — type advice while it runs an
 | [`@steer-agent/core`](./packages/core) | Core steering library     |
 | [`demo-cli`](./examples/demo-cli)      | Interactive terminal demo |
 
-## Roadmap
-
-- [x] Core library (`@steer-agent/core`)
-- [x] Interactive demo CLI
-- [ ] PR to Roo Code (integration)
-- [ ] PR to Cline / Continue.dev
-- [ ] VS Code Extension (standalone coaching sidebar)
-
 ## License
 
 AGPL-3.0
