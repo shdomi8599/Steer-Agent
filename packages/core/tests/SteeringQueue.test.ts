@@ -8,63 +8,63 @@ describe('SteeringQueue', () => {
     queue = new SteeringQueue({ maxSize: 5, ttl: 60_000 });
   });
 
-  test('조언을 큐에 추가하면 상태가 queued', () => {
-    const msg = queue.enqueue('UTF-8 명시해줘');
+  test('State is queued when advice is added to the queue', () => {
+    const msg = queue.enqueue('Please specify UTF-8');
     expect(msg.status).toBe('queued');
     expect(msg.type).toBe('reactive');
-    expect(msg.content).toBe('UTF-8 명시해줘');
+    expect(msg.content).toBe('Please specify UTF-8');
     expect(msg.id).toBeTruthy();
   });
 
-  test('현재 스텝 ID가 메시지에 기록됨', () => {
-    const msg = queue.enqueue('조언', 'step-1');
+  test('Current step ID is recorded in the message', () => {
+    const msg = queue.enqueue('Advice', 'step-1');
     expect(msg.agentStepAtCreation).toBe('step-1');
   });
 
-  test('hasMessages가 큐 상태를 반영', () => {
+  test('hasMessages reflects the queue state', () => {
     expect(queue.hasMessages).toBe(false);
-    queue.enqueue('조언1');
+    queue.enqueue('Advice 1');
     expect(queue.hasMessages).toBe(true);
   });
 
-  test('pendingCount가 정확히 반영', () => {
+  test('pendingCount is accurately reflected', () => {
     expect(queue.pendingCount).toBe(0);
-    queue.enqueue('조언1');
-    queue.enqueue('조언2');
+    queue.enqueue('Advice 1');
+    queue.enqueue('Advice 2');
     expect(queue.pendingCount).toBe(2);
   });
 
-  test('drain() 호출 시 모든 메시지 반환 후 큐 비어짐', () => {
-    queue.enqueue('조언1');
-    queue.enqueue('조언2');
-    queue.enqueue('조언3');
+  test('Queue is emptied after returning all messages upon calling drain()', () => {
+    queue.enqueue('Advice 1');
+    queue.enqueue('Advice 2');
+    queue.enqueue('Advice 3');
 
     const messages = queue.drain();
     expect(messages).toHaveLength(3);
-    expect(messages[0].content).toBe('조언1');
-    expect(messages[2].content).toBe('조언3');
+    expect(messages[0].content).toBe('Advice 1');
+    expect(messages[2].content).toBe('Advice 3');
 
     expect(queue.hasMessages).toBe(false);
     expect(queue.pendingCount).toBe(0);
   });
 
-  test('빈 큐에 drain() 하면 빈 배열', () => {
+  test('Empty array when drain() is called on an empty queue', () => {
     const messages = queue.drain();
     expect(messages).toHaveLength(0);
   });
 
-  test('최대 큐 크기 초과 시 가장 오래된 메시지 제거', () => {
+  test('Removes the oldest message when max queue size is exceeded', () => {
     for (let i = 0; i < 6; i++) {
-      queue.enqueue(`조언${i}`);
+      queue.enqueue(`Advice ${i}`);
     }
-    // maxSize=5이므로 첫 번째가 expired 되고 5개만 남아야 함
+    // Since maxSize=5, the first one expires and only 5 remain
     expect(queue.pendingCount).toBe(5);
     const messages = queue.drain();
-    expect(messages[0].content).toBe('조언1'); // 조언0은 제거됨
+    expect(messages[0].content).toBe('Advice 1'); // Advice 0 is removed
   });
 
-  test('상태 업데이트', () => {
-    const msg = queue.enqueue('조언');
+  test('Status update', () => {
+    const msg = queue.enqueue('Advice');
     queue.updateStatus(msg.id, 'acknowledged');
     
     const updated = queue.getMessage(msg.id);
@@ -72,8 +72,8 @@ describe('SteeringQueue', () => {
     expect(updated?.acknowledgedAt).toBeTruthy();
   });
 
-  test('applied 상태 업데이트 시 appliedAt 기록', () => {
-    const msg = queue.enqueue('조언');
+  test('Records appliedAt when updating applied status', () => {
+    const msg = queue.enqueue('Advice');
     queue.updateStatus(msg.id, 'applied');
     
     const updated = queue.getMessage(msg.id);
@@ -81,19 +81,19 @@ describe('SteeringQueue', () => {
     expect(updated?.appliedAt).toBeTruthy();
   });
 
-  test('메시지 삭제', () => {
-    const msg = queue.enqueue('조언');
+  test('Delete message', () => {
+    const msg = queue.enqueue('Advice');
     expect(queue.remove(msg.id)).toBe(true);
     expect(queue.hasMessages).toBe(false);
   });
 
-  test('존재하지 않는 메시지 삭제 시 false', () => {
+  test('false when deleting a non-existent message', () => {
     expect(queue.remove('non-existent')).toBe(false);
   });
 
-  test('getAllMessages 필터', () => {
-    const msg1 = queue.enqueue('조언1');
-    const msg2 = queue.enqueue('조언2');
+  test('getAllMessages filter', () => {
+    const msg1 = queue.enqueue('Advice 1');
+    const msg2 = queue.enqueue('Advice 2');
     queue.updateStatus(msg1.id, 'applied');
 
     const applied = queue.getAllMessages({ status: 'applied' });
